@@ -1,3 +1,4 @@
+# VENVS Python
 .venv/
 
 # Jet Brains
@@ -6,3 +7,6 @@
 # MACOSX
 .DS_Store
 **/.DS_Store
+
+# Jupyter
+**/.ipynb_checkpoints
