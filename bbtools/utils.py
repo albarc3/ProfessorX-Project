@@ -32,9 +32,11 @@ def windowfy_dataset(dataframe, chunk_size=100, n_channels=16):
         channels_array.append("EEG-ch" + str(i))
 
     dataframe_as_pd = dataframe[channels_array].to_numpy()
+    # shape --> (samplesChannel, nChannels)
 
-    for index in range(n_chunks):
-        for j in range(chunk_size):
-            windows[index][j] = dataframe_as_pd[index + j]
+    for iChunk in range(n_chunks):
+        for iSample in range(chunk_size):
+            idf = (iChunk * chunk_size) + iSample
+            windows[iChunk][iSample] = dataframe_as_pd[idf]
 
     return windows
