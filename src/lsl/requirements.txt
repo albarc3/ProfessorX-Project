@@ -5,3 +5,4 @@ pylsl
 pyqt5
 pyqtgraph
 scipy
+mne-realtime
