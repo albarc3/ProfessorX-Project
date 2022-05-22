@@ -40,3 +40,16 @@ def windowfy_dataset(dataframe, chunk_size=100, n_channels=16):
             windows[iChunk][iSample] = dataframe_as_pd[idf]
 
     return windows
+
+import pandas as pd
+
+def labelingWindows(windows, artifactLabel):
+    windowsMap = {'window': [], 'label': []}
+    for i, window in enumerate(windows):
+        even = (i % 2) == 0
+        label = artifactLabel if (even and i!=0) else "pause"
+        windowsMap['window'].append(window)
+        windowsMap['label'].append(label)
+    df = pd.DataFrame(windowsMap)
+    df.columns = ['window', 'label']
+    return df
