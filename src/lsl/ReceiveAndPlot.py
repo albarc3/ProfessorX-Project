@@ -1,5 +1,7 @@
+from pathlib import Path
+from datetime import datetime
 import numpy as np
-from pylsl import StreamInlet, resolve_stream, local_clock
+from pylsl import StreamInlet, resolve_stream
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtCore, QtGui
 from scipy.signal import butter, lfilter, lfilter_zi
@@ -60,7 +62,6 @@ class EEGViewer:
         self.buffer = np.zeros((self.inlet.channel_count, n))
         self.t = np.linspace(0, self.plot_duration, n, endpoint=False)
 
-
     def preparePlot(self):
         self.win = pg.GraphicsWindow()
         self.win.setWindowTitle('LSL Plot ' + self.inlet.info().name())
@@ -74,9 +75,20 @@ class EEGViewer:
         self.plt.setMenuEnabled(False)
         self.plt.setTitle(self.inlet.info().name())        
         self.curves = [self.plt.plot() for x in range(self.inlet.channel_count)]
-        
+
+    def prepareLog(self):
+        logPathFile = Path("..", "..", "data", "lsl.log")
+        self.logfile = open(logPathFile, "a")
+        self.logfile.write(self.inlet.info().name() + "\n")
+
+    def writeLog(self, filtered_y):
+        now = datetime.now()  # current date and time
+        date_time = now.strftime("%d/%m/%Y, %H:%M:%S.%f")
+        self.logfile.write(date_time + "\n")
+        self.logfile.write(np.array_str(filtered_y) + "\n")
            
     def start(self):
+        self.prepareLog()
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.update)
         self.timer.start(50)
@@ -92,6 +104,7 @@ class EEGViewer:
             for ch_ix in range(self.inlet.channel_count):
                 filtered_y = self.filter[ch_ix].filter(self.notch[ch_ix].filter(y[:,ch_ix]))
                 self.buffer[ch_ix,-samples:] = filtered_y
+                self.writeLog(filtered_y)
                 self.curves[ch_ix].setData(self.t, self.buffer[ch_ix,:]/self.scale - ch_ix)
 
 # Start Qt event loop unless running in interactive mode or using pyside.
