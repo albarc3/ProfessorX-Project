@@ -3,3 +3,4 @@ pandas
 mne
 matplotlib
 jupyter
+seaborn
