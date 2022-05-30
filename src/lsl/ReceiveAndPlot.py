@@ -6,6 +6,7 @@ from pylsl import StreamInlet, resolve_stream
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtCore, QtGui
 from scipy.signal import butter, lfilter, lfilter_zi
+import pandas as pd
 
 
 def getStrTime():
@@ -23,6 +24,23 @@ def saveWindowPickle(window):
     file = open(path_file, "wb")
     pickle.dump(window, file)
     file.close()
+
+def loadModel(filename):
+    path_file = Path("..", "..", "models", filename + ".pickle")
+    file = open(path_file, 'rb')
+    loaded_model = pickle.load(file)
+    print("--loading model--")
+    print(loaded_model)
+    file.close()
+    return loaded_model
+
+def generateDfWindowChannel(window, nchannel, nsamples):
+    map_to_df = {}
+    for nsample in range(nsamples):
+        sample = window[nsample][nchannel]
+        map_to_df[nsample] = [sample]
+    return pd.DataFrame(map_to_df)
+
 
 class BandPass:
     def __init__(self, lowcut, highcut, sr, order=4):
@@ -57,10 +75,12 @@ class EEGViewer:
     def __init__(self):
         self.plot_duration = 7.0
         self.scale = 160
+        self.n_samples_window = 256 * 5
 
         self.windows_queue = []
-        self.window_buffer = {'timestamp_init': '', 'timestamp_end': '', 'data': []}
+        self.window_buffer = {'timestamp': '', 'data': []}
         self.samplesCounter = 0
+        self.model = loadModel('random_forest')
 
     def connect(self):
         # first resolve an EEG stream on the lab network
@@ -110,14 +130,23 @@ class EEGViewer:
 
         if self.samplesCounter == 0:
             self.samplesCounter = self.samplesCounter + 1
-            self.window_buffer['timestamp_init'] = getStrTime()
-        elif self.samplesCounter == 256:
+        elif self.samplesCounter == self.n_samples_window:
             self.samplesCounter = 0
-            self.window_buffer['timestamp_end'] = getStrTime()
-            self.windows_queue.append(self.window_buffer)
-            saveWindowPickle(self.window_buffer)
+            self.window_buffer['timestamp'] = getStrTime()
+            self.windows_queue.append(self.window_buffer.copy())
+            self.window_buffer['data'] = [] # reset
+            #saveWindowPickle(self.window_buffer)
+            self.classify(self.windows_queue[0])
         else:
             self.samplesCounter = self.samplesCounter + 1
+
+    def classify(self, window):
+        df = generateDfWindowChannel(window['data'], 2, self.n_samples_window)
+        print("--df window channel--")
+        print(df)
+        result = self.model.predict(df)
+        print("--result--")
+        print(result)
 
     def start(self):
         self.prepareLog()

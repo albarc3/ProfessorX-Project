@@ -7,3 +7,4 @@ pyqtgraph
 scipy
 mne-realtime
 plotly
+scikit-learn
