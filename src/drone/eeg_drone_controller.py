@@ -26,8 +26,6 @@ class DroneController:
 
     def moveRight(self):
         print(f"/nmoveRight")
-        # global horizontalCount
-        # global self.mambo
         print("horizontalCount: " + str(self.horizontalCount))
         if abs(self.horizontalCount) < 5:
             self.mambo.fly_direct(roll=15, pitch=0, yaw=0, vertical_movement=0, duration=1)
@@ -46,76 +44,65 @@ class DroneController:
 
     def moveLeft(self):
         print(f"/nmoveLeft")
-        global horizontalCount
-        global mambo
-        print("horizontalCount: " + str(horizontalCount))
-        if abs(horizontalCount) < 5:
-            mambo.fly_direct(roll=-15, pitch=0, yaw=0, vertical_movement=0, duration=1)
-            self.horizontalCount = horizontalCount - 1
-            mambo.smart_sleep(1)
+        print("horizontalCount: " + str(self.horizontalCount))
+        if abs(self.horizontalCount) < 5:
+            self.mambo.fly_direct(roll=-15, pitch=0, yaw=0, vertical_movement=0, duration=1)
+            self.horizontalCount = self.horizontalCount - 1
+            self.mambo.smart_sleep(1)
 
     def moveForward(self):
         print(f"/nmoveForward")
-        global deepCount
-        global mambo
-        print("deepCount: " + str(deepCount))
-        if abs(deepCount) < 5:
-            mambo.fly_direct(roll=0, pitch=20, yaw=0, vertical_movement=0, duration=1)
-            self.deepCount = deepCount + 1
-            mambo.smart_sleep(1)
+        print("deepCount: " + str(self.deepCount))
+        if abs(self.deepCount) < 5:
+            self.mambo.fly_direct(roll=0, pitch=20, yaw=0, vertical_movement=0, duration=1)
+            self.deepCount = self.deepCount + 1
+            self.mambo.smart_sleep(1)
 
     def moveBackward(self):
         print(f"/nmoveBackward")
-        global deepCount
-        global mambo
-        print("deepCount: " + str(deepCount))
-        if abs(deepCount) < 5:
-            mambo.fly_direct(roll=0, pitch=-20, yaw=-0, vertical_movement=0, duration=1)
-            self.deepCount = deepCount + 1
-            mambo.smart_sleep(1)
+        print("deepCount: " + str(self.deepCount))
+        if abs(self.deepCount) < 5:
+            self.mambo.fly_direct(roll=0, pitch=-20, yaw=-0, vertical_movement=0, duration=1)
+            self.deepCount = self.deepCount + 1
+            self.mambo.smart_sleep(1)
 
     def moveUp(self):
         print(f"/nmoveUp")
-        global verticalCount
-        global mambo
-        print("verticalCount: " + str(verticalCount))
-        if abs(verticalCount) < 5:
-            mambo.fly_direct(roll=0, pitch=0, yaw=0, vertical_movement=10, duration=1)
-            self.verticalCount = verticalCount + 1
-            mambo.smart_sleep(1)
+        print("verticalCount: " + str(self.verticalCount))
+        if abs(self.verticalCount) < 5:
+            self.mambo.fly_direct(roll=0, pitch=0, yaw=0, vertical_movement=10, duration=1)
+            self.verticalCount = self.verticalCount + 1
+            self.mambo.smart_sleep(1)
 
     def moveDown(self):
         print(f"/nmoveDown")
-        global verticalCount
-        global mambo
-        print("verticalCount: " + str(verticalCount))
-        if abs(verticalCount) < 5:
-            mambo.fly_direct(roll=0, pitch=0, yaw=0, vertical_movement=-10, duration=1)
-            self.verticalCount = verticalCount - 1
-            mambo.smart_sleep(1)
+
+        print("verticalCount: " + str(self.verticalCount))
+        if abs(self.verticalCount) < 5:
+            self.mambo.fly_direct(roll=0, pitch=0, yaw=0, vertical_movement=-10, duration=1)
+            self.verticalCount = self.verticalCount - 1
+            self.mambo.smart_sleep(1)
 
     def rotateRight(self):
-        global mambo
         print(f"/nrotateRight")
-        mambo.fly_direct(roll=0, pitch=0, yaw=10, vertical_movement=0, duration=1)
-        mambo.smart_sleep(1)
+        self.mambo.fly_direct(roll=0, pitch=0, yaw=10, vertical_movement=0, duration=1)
+        self.mambo.smart_sleep(1)
 
     def rotateLeft(self):
-        global mambo
         print(f"/nrotateLeft")
-        mambo.fly_direct(roll=0, pitch=0, yaw=-10, vertical_movement=0, duration=1)
-        mambo.smart_sleep(1)
+        self.mambo.fly_direct(roll=0, pitch=0, yaw=-10, vertical_movement=0, duration=1)
+        self.mambo.smart_sleep(1)
 
     def takeOff(self):
-        mambo.safe_takeoff(5)
+        self.mambo.safe_takeoff(5)
         print(f"/ntakeOff")
 
     def safeLand(self):
-        mambo.safe_land(5)
+        self.mambo.safe_land(5)
         print(f"/nsafeLand")
 
     def fire(self):
-        mambo.fire_gun()
+        self.mambo.fire_gun()
         print(f"/nfire")
     
 
