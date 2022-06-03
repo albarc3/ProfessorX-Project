@@ -158,9 +158,9 @@ class EEGViewer:
 
     def launchDroneAction(self, action):
         print("--- action --->", action)
-        url = 'localhost:5000/drone/'+action
+        url = 'http://localhost:5000/drone/'+action
         res = requests.get(url)
-        print("--- response --->", res)
+        print("--- response --->", res.text)
 
     def start(self):
         self.prepareLog()
@@ -184,7 +184,7 @@ class EEGViewer:
                     self.saveTemporalWindows(filtered_y)
                 except Exception as e:
                     print("---error---", e)
-                    os._exit
+                    break
 
                 self.curves[ch_ix].setData(self.t, self.buffer[ch_ix, :] / self.scale - ch_ix)
 
