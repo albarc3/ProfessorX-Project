@@ -1,3 +1,4 @@
+import os
 import pickle
 from pathlib import Path
 from datetime import datetime
@@ -7,7 +8,9 @@ import pyqtgraph as pg
 from pyqtgraph.Qt import QtCore, QtGui
 from scipy.signal import butter, lfilter, lfilter_zi
 import pandas as pd
+import requests
 
+## UTILS
 
 def getStrTime():
     now = datetime.now()  # current date and time
@@ -29,15 +32,14 @@ def loadModel(filename):
     path_file = Path("..", "..", "models", filename + ".pickle")
     file = open(path_file, 'rb')
     loaded_model = pickle.load(file)
-    print("--loading model--")
-    print(loaded_model)
+    print("--- loading model --->", loaded_model)
     file.close()
     return loaded_model
 
-def generateDfWindowChannel(window, nchannel, nsamples):
+def generateDfWindowChannel(window, fixed_channel, nsamples):
     map_to_df = {}
     for nsample in range(nsamples):
-        sample = window[nsample][nchannel]
+        sample = window[nsample][fixed_channel]
         map_to_df[nsample] = [sample]
     return pd.DataFrame(map_to_df)
 
@@ -75,12 +77,17 @@ class EEGViewer:
     def __init__(self):
         self.plot_duration = 7.0
         self.scale = 160
-        self.n_samples_window = 256 * 5
+        self.n_samples_window = 256 * 5 # seconds, depends on classifier
 
         self.windows_queue = []
         self.window_buffer = {'timestamp': '', 'data': []}
         self.samplesCounter = 0
         self.model = loadModel('random_forest')
+        self.actions_map = {
+            0: 'moveleft',
+            1: 'moveRight',
+            2: 'fire'
+        }
 
     def connect(self):
         # first resolve an EEG stream on the lab network
@@ -128,25 +135,32 @@ class EEGViewer:
     def saveTemporalWindows(self, filtered_y):
         self.window_buffer['data'].append(filtered_y)
 
-        if self.samplesCounter == 0:
-            self.samplesCounter = self.samplesCounter + 1
-        elif self.samplesCounter == self.n_samples_window:
-            self.samplesCounter = 0
+        if self.samplesCounter == self.n_samples_window:
             self.window_buffer['timestamp'] = getStrTime()
-            self.windows_queue.append(self.window_buffer.copy())
-            self.window_buffer['data'] = [] # reset
+            win_copy = self.window_buffer.copy()
+            self.windows_queue.append(win_copy)
             #saveWindowPickle(self.window_buffer)
-            self.classify(self.windows_queue[0])
+
+            predicted = self.classify(win_copy['data'])
+            action = self.actions_map[int(predicted)]
+            self.launchDroneAction(action)
+
+            self.window_buffer['data'] = []  # reset
+            self.samplesCounter = 0
         else:
             self.samplesCounter = self.samplesCounter + 1
 
     def classify(self, window):
-        df = generateDfWindowChannel(window['data'], 2, self.n_samples_window)
-        print("--df window channel--")
-        print(df)
-        result = self.model.predict(df)
-        print("--result--")
-        print(result)
+        df = generateDfWindowChannel(window, 2, self.n_samples_window)
+        predicted = self.model.predict(df)
+        print("--- predicted --->", predicted[0])
+        return predicted
+
+    def launchDroneAction(self, action):
+        print("--- action --->", action)
+        url = 'localhost:5000/drone/'+action
+        res = requests.get(url)
+        print("--- response --->", res)
 
     def start(self):
         self.prepareLog()
@@ -165,7 +179,13 @@ class EEGViewer:
                 filtered_y = self.filter[ch_ix].filter(self.notch[ch_ix].filter(y[:, ch_ix]))
                 self.buffer[ch_ix, -samples:] = filtered_y
                 # self.writeLog(filtered_y)
-                self.saveTemporalWindows(filtered_y)
+
+                try:
+                    self.saveTemporalWindows(filtered_y)
+                except Exception as e:
+                    print("---error---", e)
+                    os._exit
+
                 self.curves[ch_ix].setData(self.t, self.buffer[ch_ix, :] / self.scale - ch_ix)
 
 
