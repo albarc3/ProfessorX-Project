@@ -1,5 +1,5 @@
 from flask import Flask
-from eeg_drone_controller import DroneController
+from mambo_controller import MamboController
 import time
 server = Flask(__name__)
 
@@ -44,7 +44,7 @@ def droneFire():
 if __name__ == "__main__":
 
     print("main")
-    controller = DroneController()
+    controller = MamboController()
     controller.start()
 
     time.sleep(5)

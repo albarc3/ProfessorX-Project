@@ -8,7 +8,7 @@ Author: Amy McGovern
 from vendor.Minidrone import Mambo
 
 
-class DroneController:
+class MamboController:
     mamboAddrStatic = "e0:14:0c:71:3d:fc"
 
     def __init__(self):
