@@ -7,35 +7,48 @@ server = Flask(__name__)
 @server.route('/drone/takeoff')
 def droneTakeOff():
     print('taking off!!!!!!')
-    controller.take_off()
+    drone_controller.take_off()
     return 'Drone Taking off!!!'
 
 @server.route('/drone/landing')
 def droneLanding():
     print('landing!!!!!!')
-    controller.land()
+    drone_controller.land()
     return 'Drone landing!!!'
 
-@server.route('/drone/moveleft')
+@server.route('/drone/left')
 def droneMoveLeft():
     print('moving left!!!!!!')
-    controller.move_left()
+    drone_controller.move_left()
     return 'Drone Moving Left!!!'
 
-@server.route('/drone/moveright')
+@server.route('/drone/right')
 def droneMoveRight():
     print('moving right!!!!!!')
-    controller.move_right()
+    drone_controller.move_right()
     return 'Drone Moving Right!!!'
+
+@server.route('/drone/up')
+def droneMoveUp():
+    print('moving up!!!!!!')
+    drone_controller.move_up()
+    return 'Drone Moving Up!!!'
+
+@server.route('/drone/down')
+def droneMoveDown():
+    print('moving up!!!!!!')
+    drone_controller.move_down()
+    return 'Drone Moving Up!!!'
 
 if __name__ == "__main__":
 
     print("--init tello controller--")
-    controller = TelloController()
-    controller.start()
+    drone_controller = TelloController()
+    drone_controller.start()
     print("--ready--")
 
-    time.sleep(5)
-
+    time.sleep(2)
+    print('--taking off--')
+    drone_controller.take_off()
     print('--running server--')
     server.run()

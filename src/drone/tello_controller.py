@@ -3,7 +3,6 @@ import threading
 import time
 from vendor.stats import Stats
 
-
 class TelloController:
     def __init__(self):
         self.local_ip = '0.0.0.0'
@@ -22,6 +21,7 @@ class TelloController:
         self.log = []
 
         self.MAX_TIME_OUT = 15.0
+        self.MAX_CMS_MOVEMENT = 40
 
     def send_command(self, command):
         """
@@ -86,24 +86,24 @@ class TelloController:
         self.send_command('land')
 
     def move_left(self):
-        self.send_command('left')
+        self.send_command('left ' + str(self.MAX_CMS_MOVEMENT))
 
     def move_right(self):
-        self.send_command('right')
+        self.send_command('right ' + str(self.MAX_CMS_MOVEMENT))
 
     def move_forward(self):
-        self.send_command('forward')
+        self.send_command('forward ' + str(self.MAX_CMS_MOVEMENT))
 
     def move_backward(self):
-        self.send_command('back')
+        self.send_command('back ' + str(self.MAX_CMS_MOVEMENT))
 
     def move_up(self):
-        self.send_command('up')
+        self.send_command('up ' + str(self.MAX_CMS_MOVEMENT))
 
     def move_down(self):
-        self.send_command('down')
+        self.send_command('down ' + str(self.MAX_CMS_MOVEMENT))
 
     def flip(self):
-        self.send_command('flip')
+        self.send_command('flip ' + str(self.MAX_CMS_MOVEMENT))
 
 # print ('Tello: command takeoff land flip forward back left right \r\n       up down cw ccw speed speed?\r\n')

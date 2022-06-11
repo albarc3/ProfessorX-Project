@@ -34,7 +34,7 @@ def loadArtifact(filename):
     path_file = Path("..", "..", "data", "pickle", filename)
     file = open(path_file, 'rb')
     loaded_artifact = pickle.load(file)
-    print("--- loading artifact, nsamples --->", len(loaded_artifact))
+    #print("--- loading artifact, nsamples --->", len(loaded_artifact))
     file.close()
     return loaded_artifact
 
@@ -77,8 +77,8 @@ class EEGClassifier:
 
         self.actions_map = {
             0: 'no action',  # basal
-            1: 'fire',  # jaw
-            2: 'moveLeft'  # left blink
+            1: 'left',  # jaw
+            2: 'right'  # left blink
         }
         self.model = loadModel('channel3_two_and_a_half_seconds_windows_rubert_jaw_and_left_blink_regression.pkl')
         self.load_artifacts()
@@ -131,4 +131,6 @@ if __name__ == '__main__':
     predicted = classifier_offline.classify_signal_into_action(filtered_artifact)
     action = classifier_offline.actions_map[int(predicted)]
     print('action --> ', action)
-    # self.launchDroneAction(action)
+    classifier_offline.launch_drone_action(action)
+    print('action --> ', "land")
+    classifier_offline.launch_drone_action("land")
