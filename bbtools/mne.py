@@ -12,7 +12,7 @@ def high_low_filter_notches(raw, fmin = 0.5, fmax = 100, fnotch = 50.):
   '''
   fig = raw.plot_psd(fmin = 0, fmax = fmax + 100, average=False, tmin = 0, tmax = 250)
   
-  raw.filter(l_freq = fmin, h_freq = fmax, method = 'iir')
+  raw.filter_bandpass(l_freq = fmin, h_freq = fmax, method ='iir')
   powerEEG = raw.plot_psd(fmin = 0, fmax = 200, average=False, tmin = 0, tmax = 250)
   timeEEG = raw.plot(start = 0., duration = 250., scalings=0.5e-3, remove_dc=True)
   

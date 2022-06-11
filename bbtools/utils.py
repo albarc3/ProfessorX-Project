@@ -18,7 +18,7 @@ def filters(raw, fmin=0.5, fmax=100., notch=50., sampling_rate=250, fir_design='
         * raw_c - mne Raw object: Processed Raw copy
         '''
     raw_c = raw.copy()
-    raw_c.filter(l_freq=fmin, h_freq=fmax)
+    raw_c.filter_bandpass(l_freq=fmin, h_freq=fmax)
     raw_c.notch_filter(np.arange(notch, sampling_rate / 2, notch), fir_design=fir_design)
     return raw_c
 
